@@ -49,34 +49,30 @@ class SocialNetwork:
                 "language": custom_user.get("language", "English")
             }
         
-        self._generate_random_users(99 if custom_user else 100)
+        self._load_users_from_csv()
 
     # -------------------------------------------------
-    # Generate Random Users
+    # Load Users from CSV
     # -------------------------------------------------
-    def _generate_random_users(self, n):
-        names = [
-            "Aarav", "Vivaan", "Aditya", "Vihaan", "Arjun",
-            "Sai", "Reyansh", "Krishna", "Ishaan", "Shaurya",
-            "Anaya", "Diya", "Myra", "Aadhya", "Kiara",
-            "Riya", "Saanvi", "Pari", "Anika", "Navya"
-        ]
-
-        interests_list = [
-            "Gaming", "Music", "Fitness", "Coding",
-            "Travel", "Photography", "Cricket",
-            "Movies", "Reading", "Startups"
-        ]
-
-        cities = ["Mumbai", "Delhi", "Bangalore", "Pune", "Chennai"]
-
-        for i in range(n):
-            username = f"{random.choice(names)}_{i}"
-            self.users[username] = {
-                "age": random.randint(18, 35),
-                "city": random.choice(cities),
-                "interest": random.choice(interests_list)
-            }
+    def _load_users_from_csv(self):
+        try:
+            df = pd.read_csv("social_dataset.csv")
+            for _, row in df.iterrows():
+                name = row["Name"]
+                if name not in self.users:  # Skip if custom user already added
+                    self.users[name] = {
+                        "age": random.randint(18, 40),  # Random age since not in CSV
+                        "city": row["City"],
+                        "interest": row["Interest"],
+                        "profession": row["Profession"],
+                        "skills": [row["Skill"]],  # Single skill as list
+                        "company": row["Company"],
+                        "education": row["Education"],
+                        "hobby": row["Hobby"],
+                        "language": row["Language"]
+                    }
+        except FileNotFoundError:
+            print("Warning: social_dataset.csv not found. No users loaded.")
 
     # -------------------------------------------------
     # Recommendation Logic
